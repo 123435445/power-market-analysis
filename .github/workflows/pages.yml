@@ -1,0 +1,36 @@
+name: 发布电力交易分析系统
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取网站文件
+        uses: actions/checkout@v4
+      - name: 配置 GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: 打包网站
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: 发布网站
+        id: deployment
+        uses: actions/deploy-pages@v4
